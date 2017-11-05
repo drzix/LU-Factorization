@@ -71,15 +71,18 @@ class SquareMatrix:
             self._add_other_rows_from_echelon_form_row(echelon_form_row_idx=i, pivot_col_idx=pivot_col_idx)
             pending_col_idx = pivot_col_idx + 1
 
-    def print(self):
+    def __str__(self):
         """행렬 전체를 출력한다."""
         form_str = '{:>' + str(self._get_max_len_elem_str()) + 's}'
+        ret = ''
 
         for i in range(0, self.nr_row):
             for j in range(0, self.nr_column):
-                print(form_str.format(str(self.rows[i][j])), end='  ')
+                ret += form_str.format(str(self.rows[i][j])) + '  '
 
-            print('')
+            ret += '\n'
+
+        return ret
 
     def _get_max_len_elem_str(self):
         """행렬 안의 원소들 중 가장 긴 문자열의 길이를 구한다.

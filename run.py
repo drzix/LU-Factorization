@@ -18,7 +18,7 @@ try:
     #                   [15, 2, -34, 1, 4, -86]])
 
     sm.to_reduced_row_echelon_form()
-    sm.print()
+    print(sm)
 
 except Exception as e:
     print('Error: ' + e.args[0])
