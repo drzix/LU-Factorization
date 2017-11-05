@@ -18,9 +18,9 @@ class SquareMatrix:
         Examples
         --------
 
-        my_mtrx = SquareMatrix(((1, 0, 1231231, 3),
-                                (2, 3, 4, 3241),
-                                (-1, -3, -3, -4)))
+        my_mtrx = SquareMatrix(((1, 0, 1231231),
+                                (2, 3, 4),
+                                (-1, -3, -3)))
         """
         if type(rows) is not list and type(rows) is not tuple:
             raise Exception('matrix param must be list or tuple')
@@ -51,8 +51,64 @@ class SquareMatrix:
 
         self.nr_row = len(self.rows)
 
-        if self.nr_row + 1 != self.nr_column:
+        if self.nr_row != self.nr_column:
             raise Exception('not a square matrix')
+
+    def lu_factorize(self):
+        u = SquareMatrix(self.rows)
+        em_list = []
+
+        for i in range(0, u.nr_row):
+            if u.rows[i][i] == 0:
+                for j in range(i, u.nr_row):
+                    if u.rows[j][i] != 0:
+                        raise Exception('cannot be factorized by LU without row interchanges')
+
+            for j in range(i + 1, u.nr_row):
+                rev = u.rows[j][i] / -u.rows[i][i]
+                for k in range(i, u.nr_row):
+                    u.rows[j][k] += u.rows[i][k] * rev
+
+                new_m = []
+                for ni in range(0, u.nr_row):
+                    new_m.append([])
+                    for nj in range(0, u.nr_row):
+                        if nj != ni:
+                            new_m[ni].append(Fraction(0, 1))
+                        else:
+                            new_m[ni].append(Fraction(1, 1))
+                new_m[j][i] = -rev
+                em_list.append(SquareMatrix(new_m))
+
+        l = []
+        for ni in range(0, u.nr_row):
+            l.append([])
+            for nj in range(0, u.nr_row):
+                if nj != ni:
+                    l[ni].append(Fraction(0, 1))
+                else:
+                    l[ni].append(Fraction(1, 1))
+
+        l = SquareMatrix(l)
+        for em in em_list:
+            l = l * em
+
+        return l, u
+
+    def __mul__(self, other):
+        if self.nr_column != other.nr_row:
+            return None
+
+        ret = []
+        for i in range(0, self.nr_row):
+            ret.append([])
+            for j in range(0, self.nr_row):
+                elem_sum = 0
+                for k in range(0, self.nr_row):
+                    elem_sum += self.rows[i][k] * other.rows[k][j]
+                ret[i].append(elem_sum)
+
+        return SquareMatrix(ret)
 
     def to_reduced_row_echelon_form(self):
         """행렬을 reduced row echelon form 형태로 바꾸어준다.
